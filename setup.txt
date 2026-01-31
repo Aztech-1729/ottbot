@@ -1,0 +1,109 @@
+OTT SELL BOT - SIMPLE VPS SETUP (Cloudflare Tunnel Only)
+Developed by: t.me/aztechdeveloper
+
+============================================================
+1) INSTALL (VPS / Ubuntu)
+============================================================
+1) Update packages:
+   sudo apt update -y
+
+2) Install python + venv + screen:
+   sudo apt install -y python3 python3-pip python3-venv screen
+
+3) Upload bot folder to VPS, then:
+   cd /path/to/OTT_SELL_BOT
+
+4) Create venv + install deps:
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+
+============================================================
+2) CONFIG (IMPORTANT)
+============================================================
+✅ Bot settings (token/mongo/admins/keys) are already set.
+⚠️ Client only needs to update these values:
+
+A) Webhook URLs (after tunnel starts):
+- RAZORPAY_WEBHOOK_URL
+- OXAPAY_WEBHOOK_URL
+
+B) OxaPay Merchant API Key (if client generates new key):
+- OXAPAY_API_KEY
+
+After generating a new OxaPay merchant key, client must:
+1) Paste new key into config.py (OXAPAY_API_KEY)
+2) Set OxaPay dashboard callback URL to:
+   https://YOUR_TUNNEL.trycloudflare.com/oxapay/webhook
+3) Ensure config.py also contains:
+   OXAPAY_WEBHOOK_URL=https://YOUR_TUNNEL.trycloudflare.com/oxapay/webhook
+
+(They can set these in config.py or as environment variables.)
+
+============================================================
+3) START BOT IN SCREEN
+============================================================
+1) Start screen:
+   screen -S ottbot
+
+2) Run bot:
+   source venv/bin/activate
+   python3 bot.py
+
+3) Detach screen:
+   Ctrl + A then D
+
+4) Re-attach later:
+   screen -r ottbot
+
+============================================================
+4) START CLOUDFLARE TUNNEL
+============================================================
+1) Install cloudflared:
+   wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+   chmod +x cloudflared-linux-amd64
+   sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
+
+2) Start tunnel in SCREEN (recommended):
+   screen -S tunnel8000
+   cloudflared tunnel --url http://localhost:8000
+
+   Detach screen:
+   Ctrl + A then D
+
+   Re-attach later:
+   screen -r tunnel8000
+
+3) Copy the tunnel URL shown, example:
+   https://YOUR_TUNNEL.trycloudflare.com
+
+4) Set webhook URLs:
+   Razorpay:
+     https://YOUR_TUNNEL.trycloudflare.com/razorpay/webhook
+   OxaPay:
+     https://YOUR_TUNNEL.trycloudflare.com/oxapay/webhook
+
+============================================================
+5) DASHBOARD SETTINGS
+============================================================
+RAZORPAY:
+- Dashboard -> Webhooks
+- Event: payment.captured
+- Secret: same as RAZORPAY_WEBHOOK_SECRET in config.py
+- URL: https://YOUR_TUNNEL.trycloudflare.com/razorpay/webhook
+
+OXAPAY:
+- Dashboard -> Callback/Webhook URL
+- URL: https://YOUR_TUNNEL.trycloudflare.com/oxapay/webhook
+
+============================================================
+6) QUICK TEST
+============================================================
+1) Razorpay test: ₹1
+2) OxaPay test: $0.1
+3) Check wallet credited
+
+============================================================
+Support / Developer
+============================================================
+Developer: t.me/aztechdeveloper
